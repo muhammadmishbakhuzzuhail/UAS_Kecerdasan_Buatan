@@ -44,6 +44,12 @@ st.markdown("Analisis berita secara komprehensif: deteksi keaslian, identifikasi
 
 st.markdown("---")
 
+st.markdown("Cara penggunaan:")
+st.markdown("1. Pilih berita kemudian salin teks isi berita")
+st.markdown("2. Tempel pada teks area yang tersedia")
+st.markdown("3. Klik tombol analisis untuk memulai analisa dari model yang sudah disediakan")
+st.markdown("4. Tunggu model untuk mengolah isi berita sampai terlihat output berupa jenis berita asli/palsu, kategori judul berita, dan ringkasan")
+
 user_input = st.text_area("Masukkan teks artikel berita yang ingin Anda analisis:", height=250, placeholder="Salin dan tempel artikel berita lengkap di sini...")
 
 analyze_button = st.button("✨ Analisis Sekarang!", type="primary")
@@ -140,3 +146,10 @@ if analyze_button and user_input:
 
 elif analyze_button and not user_input:
     st.error("Mohon masukkan teks berita terlebih dahulu untuk dianalisis.")
+
+st.markdown("Dibuat: ")
+st.markdown("Muhammad Mishbakhuz Zuhail")
+st.markdown("Dibantu oleh:")
+st.markdown("1. Claude Ai")
+st.markdown("2. Gemini")
+st.markdown("3. Chat GPT")
