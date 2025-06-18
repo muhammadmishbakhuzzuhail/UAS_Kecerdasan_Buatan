@@ -82,10 +82,10 @@ if analyze_button and user_input:
             jenis_berita_score = prob_real if prob_real > prob_fake else prob_fake
 
             encoded_input_2 = fakenews_tokenizer_2(user_input, truncation=True, padding="max_length", max_length=512, return_tensors='pt')
-            output_logits_2 = fakenews_model(**encoded_input)["logits"]
+            output_logits_2 = fakenews_model_2(**encoded_input_2)["logits"]
             softmax_2 = nn.Softmax(dim=1)
-            probs_2 = softmax(output_logits.detach())
-            prob_real_2, prob_fake_2 = probs.squeeze().tolist()
+            probs_2 = softmax_2(output_logits_2.detach())
+            prob_real_2, prob_fake_2 = probs_2.squeeze().tolist()
             
             jenis_berita_label_2 = "Berita Nyata" if prob_real_2 > prob_fake_2 else "Berita Palsu"
             jenis_berita_score_2 = prob_real_2 if prob_real_2 > prob_fake else prob_fake_2
