@@ -153,7 +153,7 @@ if analyze_button and user_input:
             st.markdown("---")
             st.subheader("📊 Tingkat Keyakinan Model")
             
-            col1, col2, col3, col4 = st.columns(3)
+            col1, col2, col3, col4 = st.columns(4)
             with col1:
                 st.markdown("**Keaslian Model distilroberta-base-finetuned-fake-news-detection**")
                 st.progress(jenis_berita_score)
