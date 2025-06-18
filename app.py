@@ -88,7 +88,7 @@ if analyze_button and user_input:
             prob_real_2, prob_fake_2 = probs_2.squeeze().tolist()
             
             jenis_berita_label_2 = "Berita Nyata" if prob_real_2 > prob_fake_2 else "Berita Palsu"
-            jenis_berita_score_2 = prob_real_2 if prob_real_2 > prob_fake else prob_fake_2
+            jenis_berita_score_2 = prob_real_2 if prob_real_2 > prob_fake_2 else prob_fake_2
 
             # --- Proses 2: Klasifikasi Topik ---
             topic_result = topic_classifier(user_input)[0]
