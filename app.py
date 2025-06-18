@@ -8,11 +8,19 @@ st.set_page_config(page_title="Dasbor Analisis Berita", page_icon="🚀", layout
 # --- Fungsi Pemuatan Model (Menggunakan Cache untuk Efisiensi) ---
 
 @st.cache_resource
-def load_fakenews_model():
+def load_fakenews_model_1():
     """Memuat model dan tokenizer untuk deteksi berita palsu."""
-    st.info("Memuat model Deteksi Berita Palsu...")
+    st.info("Memuat model distilroberta-base-finetuned-fake-news-detection untuk Deteksi Berita Palsu...")
     tokenizer = AutoTokenizer.from_pretrained("vikram71198/distilroberta-base-finetuned-fake-news-detection")
     model = AutoModelForSequenceClassification.from_pretrained("vikram71198/distilroberta-base-finetuned-fake-news-detection")
+    return tokenizer, model
+
+@st.cache_resource
+def load_fakenews_model_2():
+    """Memuat model dan tokenizer untuk deteksi berita palsu."""
+    st.info("Memuat model Fake-News-Bert-Detect untuk Deteksi Berita Palsu...")
+    tokenizer = AutoTokenizer.from_pretrained("jy46604790/Fake-News-Bert-Detect")
+    model = AutoModelForSequenceClassification.from_pretrained("jy46604790/Fake-News-Bert-Detect")
     return tokenizer, model
 
 @st.cache_resource
@@ -34,7 +42,8 @@ def load_summarizer():
 # --- Memuat semua model di awal ---
 # Menampilkan pesan loading saat model diunduh/dimuat untuk pertama kali
 with st.spinner("Mempersiapkan semua model AI... Ini mungkin memakan waktu beberapa saat pada pemuatan pertama."):
-    fakenews_tokenizer, fakenews_model = load_fakenews_model()
+    fakenews_tokenizer, fakenews_model = load_fakenews_model_1()
+    fakenews_tokenizer_2, fakenews_model_2 = load_fakenews_model_2()
     topic_classifier = load_topic_classifier()
     summarizer = load_summarizer()
 
@@ -71,6 +80,15 @@ if analyze_button and user_input:
             
             jenis_berita_label = "Berita Nyata" if prob_real > prob_fake else "Berita Palsu"
             jenis_berita_score = prob_real if prob_real > prob_fake else prob_fake
+
+            encoded_input_2 = fakenews_tokenizer_2(user_input, truncation=True, padding="max_length", max_length=512, return_tensors='pt')
+            output_logits_2 = fakenews_model(**encoded_input)["logits"]
+            softmax_2 = nn.Softmax(dim=1)
+            probs_2 = softmax(output_logits.detach())
+            prob_real_2, prob_fake_2 = probs.squeeze().tolist()
+            
+            jenis_berita_label_2 = "Berita Nyata" if prob_real_2 > prob_fake_2 else "Berita Palsu"
+            jenis_berita_score_2 = prob_real_2 if prob_real_2 > prob_fake else prob_fake_2
 
             # --- Proses 2: Klasifikasi Topik ---
             topic_result = topic_classifier(user_input)[0]
@@ -110,36 +128,48 @@ if analyze_button and user_input:
             st.header("Hasil Analisis Komprehensif")
 
             # Baris 1: Jenis Berita
-            st.markdown("#### 1. Jenis Berita")
+            st.markdown("#### 1. Jenis Berita dari model distilroberta-base-finetuned-fake-news-detection")
             if jenis_berita_label == "Berita Nyata":
                 st.success(f"**{jenis_berita_label}**")
             else:
                 st.error(f"**{jenis_berita_label}**")
             
+            # Baris 1: Jenis Berita
+            st.markdown("#### 2. Jenis Berita dari model Fake-News-Bert-Detect")
+            if jenis_berita_label_2 == "Berita Nyata":
+                st.success(f"**{jenis_berita_label_2}**")
+            else:
+                st.error(f"**{jenis_berita_label_2}**")
+
             # Baris 2: Tema
-            st.markdown("#### 2. Tema")
+            st.markdown("#### 3. Tema")
             st.info(f"**{tema_label}**")
 
             # Baris 3: Ringkasan
-            st.markdown("#### 3. Ringkasan")
+            st.markdown("#### 4. Ringkasan")
             st.markdown(f"> {ringkasan_teks}")
             
             # Bagian Akurasi di Bawah
             st.markdown("---")
             st.subheader("📊 Tingkat Keyakinan Model")
             
-            col1, col2, col3 = st.columns(3)
+            col1, col2, col3, col4 = st.columns(3)
             with col1:
-                st.markdown("**Keaslian**")
+                st.markdown("**Keaslian Model distilroberta-base-finetuned-fake-news-detection**")
                 st.progress(jenis_berita_score)
                 st.write(f"{jenis_berita_score:.2%}")
             
             with col2:
+                st.markdown("**Keaslian Model Fake-News-Bert-Detect**")
+                st.progress(jenis_berita_score_2)
+                st.write(f"{jenis_berita_score_2:.2%}")
+
+            with col3:
                 st.markdown("**Topik**")
                 st.progress(tema_score)
                 st.write(f"{tema_score:.2%}")
             
-            with col3:
+            with col4:
                 st.markdown("**Ringkasan**")
                 st.info("Tidak Berlaku (Model Generatif)")
 
